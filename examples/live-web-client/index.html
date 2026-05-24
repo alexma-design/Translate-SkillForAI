@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live Translation Client</title>
+  </head>
+  <body>
+    <main>
+      <h1>Live Translation Client</h1>
+      <label>
+        Target language
+        <input id="targetLanguage" value="es" />
+      </label>
+      <button id="start">Start</button>
+      <button id="stop">Stop</button>
+      <audio id="remoteAudio" autoplay></audio>
+      <pre id="log"></pre>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+{
+  "name": "translate-skill-for-ai",
+  "version": "0.1.0",
+  "description": "Portable translation mode skill for AI agents, Telegram bots, and OpenAI Realtime Translation.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "skill",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "dev:telegram": "tsx examples/telegram-bot.ts",
+    "dev:token-server": "tsx src/realtime/webrtc-token-server.ts"
+  },
+  "keywords": [
+    "openai",
+    "realtime",
+    "translation",
+    "telegram",
+    "agent",
+    "skill",
+    "openclaw",
+    "hermes"
+  ],
+  "author": "PainPoint AI",
+  "license": "MIT",
+  "dependencies": {
+    "telegraf": "^4.16.3",
+    "ws": "^8.18.3",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.7"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
