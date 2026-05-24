@@ -23,7 +23,9 @@ export function startWebRtcTokenServer(port = Number(process.env.PORT ?? 8787)) 
           targetLanguage: payload.targetLanguage ?? "en",
           voice: payload.voice
         });
-        response.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify(session));
+        response
+          .writeHead(200, { "Content-Type": "application/json" })
+          .end(JSON.stringify({ value: session.value ?? session.client_secret?.value, expires_at: session.expires_at }));
       } catch (error) {
         response.writeHead(500, { "Content-Type": "application/json" }).end(
           JSON.stringify({ error: error instanceof Error ? error.message : String(error) })

@@ -6,8 +6,10 @@ export interface LiveTranslationOptions {
   sourceLanguage?: string;
   voice?: string;
   onTranscriptDelta?: (text: string) => void;
+  onInputTranscriptDelta?: (text: string) => void;
   onAudioDelta?: (base64Pcm16: string) => void;
   onError?: (error: unknown) => void;
+  onClosed?: () => void;
 }
 
 export class WebSocketTranslator {
@@ -23,19 +25,20 @@ export class WebSocketTranslator {
       this.socket = new WebSocket(url, {
         headers: {
           Authorization: `Bearer ${this.config.openaiApiKey}`,
-          "OpenAI-Beta": "realtime=v1"
+          ...(this.config.safetyIdentifier
+            ? { "OpenAI-Safety-Identifier": this.config.safetyIdentifier }
+            : {})
         }
       });
 
       this.socket.on("open", () => {
         this.send({
-          type: "translation_session.update",
+          type: "session.update",
           session: {
             audio: {
               output: {
                 language: options.targetLanguage,
-                voice: options.voice ?? this.config.defaultVoice,
-                format: "pcm16"
+                voice: options.voice ?? this.config.defaultVoice
               }
             }
           }
@@ -49,8 +52,15 @@ export class WebSocketTranslator {
           if (data.type === "session.output_transcript.delta" && data.delta) {
             options.onTranscriptDelta?.(data.delta);
           }
+          if (data.type === "session.input_transcript.delta" && data.delta) {
+            options.onInputTranscriptDelta?.(data.delta);
+          }
           if (data.type === "session.output_audio.delta" && data.delta) {
             options.onAudioDelta?.(data.delta);
+          }
+          if (data.type === "session.closed") {
+            options.onClosed?.();
+            this.socket?.close();
           }
           if (data.type === "error") {
             options.onError?.(data.error ?? data);
@@ -68,10 +78,14 @@ export class WebSocketTranslator {
   }
 
   appendPcm16Audio(base64Audio: string): void {
-    this.send({ type: "input_audio_buffer.append", audio: base64Audio });
+    this.send({ type: "session.input_audio_buffer.append", audio: base64Audio });
   }
 
   close(): void {
+    if (this.socket?.readyState === WebSocket.OPEN) {
+      this.send({ type: "session.close" });
+      return;
+    }
     this.socket?.close();
     this.socket = undefined;
   }

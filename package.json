@@ -3,12 +3,22 @@
   "version": "0.1.0",
   "description": "Portable translation mode skill for AI agents, Telegram bots, and OpenAI Realtime Translation.",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    },
+    "./skill/translation-mode": "./skill/translation-mode/SKILL.md"
+  },
   "files": [
     "dist",
     "skill",
     "docs",
+    "examples/live-web-client/index.html",
+    ".env.example",
+    "AGENTS.md",
     "README.md",
     "LICENSE"
   ],

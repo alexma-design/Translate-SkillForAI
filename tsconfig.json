@@ -13,7 +13,11 @@
   },
   "include": [
     "src/**/*.ts",
-    "examples/**/*.ts",
-    "tests/**/*.ts"
+    "examples/**/*.ts"
+  ],
+  "exclude": [
+    "tests",
+    "dist",
+    "node_modules"
   ]
 }

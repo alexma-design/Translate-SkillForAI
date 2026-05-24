@@ -19,7 +19,7 @@ start?.addEventListener("click", async () => {
     body: JSON.stringify({ targetLanguage: targetLanguage?.value ?? "es" })
   });
   const session = await sessionResponse.json();
-  const token = session.client_secret?.value;
+  const token = session.value ?? session.client_secret?.value;
   if (!token) {
     throw new Error("No ephemeral Realtime token returned.");
   }
@@ -39,7 +39,7 @@ start?.addEventListener("click", async () => {
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
 
-  const sdpResponse = await fetch("https://api.openai.com/v1/realtime/translations", {
+  const sdpResponse = await fetch("https://api.openai.com/v1/realtime/translations/calls", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,

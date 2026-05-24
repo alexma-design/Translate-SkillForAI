@@ -8,6 +8,8 @@ export interface RealtimeSessionRequest {
 }
 
 export interface RealtimeEphemeralSession {
+  value?: string;
+  expires_at?: number;
   client_secret?: {
     value: string;
     expires_at?: number;
@@ -19,19 +21,21 @@ export class OpenAITranslationClient {
   constructor(private readonly config: RuntimeConfig) {}
 
   async createRealtimeSession(request: RealtimeSessionRequest): Promise<RealtimeEphemeralSession> {
-    const response = await fetch("https://api.openai.com/v1/realtime/translations/sessions", {
+    const response = await fetch("https://api.openai.com/v1/realtime/translations/client_secrets", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.config.openaiApiKey}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        ...this.safetyHeaders()
       },
       body: JSON.stringify({
-        model: this.config.realtimeModel,
-        audio: {
-          output: {
-            language: request.targetLanguage,
-            voice: request.voice ?? this.config.defaultVoice,
-            format: request.outputMode === "voice_to_text" ? "none" : "pcm16"
+        session: {
+          model: this.config.realtimeModel,
+          audio: {
+            output: {
+              language: request.targetLanguage,
+              voice: request.voice ?? this.config.defaultVoice
+            }
           }
         }
       })
@@ -55,7 +59,8 @@ export class OpenAITranslationClient {
     const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${this.config.openaiApiKey}`
+        Authorization: `Bearer ${this.config.openaiApiKey}`,
+        ...this.safetyHeaders()
       },
       body: formData
     });
@@ -73,7 +78,8 @@ export class OpenAITranslationClient {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.config.openaiApiKey}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        ...this.safetyHeaders()
       },
       body: JSON.stringify({
         model: this.config.textModel,
@@ -113,7 +119,8 @@ export class OpenAITranslationClient {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.config.openaiApiKey}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        ...this.safetyHeaders()
       },
       body: JSON.stringify({
         model: this.config.speechModel,
@@ -128,5 +135,9 @@ export class OpenAITranslationClient {
     }
 
     return response.blob();
+  }
+
+  private safetyHeaders(): Record<string, string> {
+    return this.config.safetyIdentifier ? { "OpenAI-Safety-Identifier": this.config.safetyIdentifier } : {};
   }
 }

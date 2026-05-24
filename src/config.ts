@@ -47,6 +47,7 @@ export interface RuntimeConfig {
   textModel: string;
   speechModel: string;
   defaultVoice: string;
+  safetyIdentifier?: string;
 }
 
 export function loadRuntimeConfig(env: NodeJS.ProcessEnv = process.env): RuntimeConfig {
@@ -62,6 +63,7 @@ export function loadRuntimeConfig(env: NodeJS.ProcessEnv = process.env): Runtime
     transcriptionModel: env.OPENAI_TRANSCRIPTION_MODEL ?? "gpt-4o-mini-transcribe",
     textModel: env.OPENAI_TEXT_MODEL ?? "gpt-4.1-mini",
     speechModel: env.OPENAI_SPEECH_MODEL ?? "gpt-4o-mini-tts",
-    defaultVoice: env.OPENAI_TRANSLATION_VOICE ?? "alloy"
+    defaultVoice: env.OPENAI_TRANSLATION_VOICE ?? "alloy",
+    safetyIdentifier: env.OPENAI_SAFETY_IDENTIFIER
   };
 }
